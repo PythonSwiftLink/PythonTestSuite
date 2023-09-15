@@ -80,7 +80,6 @@ public func initPython() {
     status = PyWideStringList_Append(&config.module_search_paths, wtmp_str)
     
     PyMem_RawFree(wtmp_str)
-	print(try! FileManager.default.contentsOfDirectory(atPath: path))
 	let dynload_path = "\(resourcePath)lib-dynload"
 	wtmp_str = dynload_path.withCString { Py_DecodeLocale($0, nil) }
 	status = PyWideStringList_Append(&config.module_search_paths, wtmp_str)
@@ -88,8 +87,7 @@ public func initPython() {
 	print(dynload_path)
 	
 	wtmp_str = Py_DecodeLocale(python_extra, nil)
-	//status = PyWideStringList_Append(&config.module_search_paths, wtmp_str)
-	print(try! FileManager.default.contentsOfDirectory(atPath: dynload_path))
+	status = PyWideStringList_Append(&config.module_search_paths, wtmp_str)
 	PyMem_RawFree(wtmp_str)
     
     
