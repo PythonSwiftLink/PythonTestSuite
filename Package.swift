@@ -30,7 +30,8 @@ let package = Package(
                 "PythonLib"
             ],
             resources: [
-                .copy("python_stdlib")
+                .copy("python_stdlib"),
+				.copy("python-extra")
             ]
         ),
         
