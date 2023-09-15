@@ -36,7 +36,7 @@ _names = sys.builtin_module_names
 __all__ = ["altsep", "curdir", "pardir", "sep", "pathsep", "linesep",
            "defpath", "name", "path", "devnull", "SEEK_SET", "SEEK_CUR",
            "SEEK_END", "fsencode", "fsdecode", "get_exec_path", "fdopen",
-           "extsep", "allows_subprocesses"]
+           "extsep"]
 
 def _exists(name):
     return name in globals()
@@ -829,13 +829,6 @@ def _fscodec():
 
 fsencode, fsdecode = _fscodec()
 del _fscodec
-
-
-if sys.platform in ('ios', 'tvos', 'watchos'):
-    allows_subprocesses = False
-else:
-    allows_subprocesses = True
-
 
 # Supply spawn*() (probably only for Unix)
 if _exists("fork") and not _exists("spawnv") and _exists("execv"):

@@ -96,6 +96,8 @@ else:
                     "CREATE_NO_WINDOW", "DETACHED_PROCESS",
                     "CREATE_DEFAULT_ERROR_MODE", "CREATE_BREAKAWAY_FROM_JOB"])
 
+# Some platforms do not support processes
+_can_fork_exec = sys.platform not in {"ios", "tvos", "watchos"}
 
 # Exception classes used by this module.
 class SubprocessError(Exception): pass
@@ -691,7 +693,10 @@ def _use_posix_spawn():
     return False
 
 
+# These are primarily fail-safe knobs for negatives. A True value does not
+# guarantee the given libc/syscall API will be used.
 _USE_POSIX_SPAWN = _use_posix_spawn()
+_USE_VFORK = True
 
 
 class Popen:
@@ -759,7 +764,7 @@ class Popen:
                  pass_fds=(), *, user=None, group=None, extra_groups=None,
                  encoding=None, errors=None, text=None, umask=-1, pipesize=-1):
         """Create new Popen instance."""
-        if not os.allows_subprocesses:
+        if not _can_fork_exec:
             raise RuntimeError(f"Subprocesses are not supported on {sys.platform}")
 
         _cleanup()

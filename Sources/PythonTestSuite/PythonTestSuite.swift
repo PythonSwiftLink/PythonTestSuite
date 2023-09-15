@@ -32,9 +32,13 @@ public func initPython() {
 	}
     print(resourcePath)
     var config: PyConfig = .init()
+	var preconfig: PyPreConfig = .init()
     print("Configuring isolated Python for Testing...")
+	
+	PyPreConfig_InitIsolatedConfig(&preconfig)
     PyConfig_InitIsolatedConfig(&config)
     
+	preconfig.utf8_mode = 1
     // Configure the Python interpreter:
     // Run at optimization level 1
     // (remove assertions, set __debug__ to False)
@@ -48,6 +52,8 @@ public func initPython() {
     config.module_search_paths_set = 1
     
     var status: PyStatus
+	
+	status = Py_PreInitialize(&preconfig)
     
     let python_home = "\(resourcePath)"
     
@@ -55,11 +61,11 @@ public func initPython() {
     
     var config_home: UnsafeMutablePointer<wchar_t>!// = config.home
     
-    status = PyConfig_SetString(&config, &config_home, wtmp_str)
-    
-    PyMem_RawFree(wtmp_str)
-    
-    config.home = config_home
+//    status = PyConfig_SetString(&config, &config_home, wtmp_str)
+//    
+//    PyMem_RawFree(wtmp_str)
+//    
+//    config.home = config_home
     
     status = PyConfig_Read(&config)
     
@@ -68,15 +74,22 @@ public func initPython() {
     let path = "\(resourcePath)"
     //let path = "\(resourcePath)/"
     
-    print("- \(path)")
+    print("resourcePath - \(path)")
+	print("\n")
     wtmp_str = Py_DecodeLocale(path, nil)
     status = PyWideStringList_Append(&config.module_search_paths, wtmp_str)
     
     PyMem_RawFree(wtmp_str)
+	print(try! FileManager.default.contentsOfDirectory(atPath: path))
+	let dynload_path = "\(resourcePath)lib-dynload"
+	wtmp_str = dynload_path.withCString { Py_DecodeLocale($0, nil) }
+	status = PyWideStringList_Append(&config.module_search_paths, wtmp_str)
+	PyMem_RawFree(wtmp_str)
+	print(dynload_path)
 	
 	wtmp_str = Py_DecodeLocale(python_extra, nil)
-	status = PyWideStringList_Append(&config.module_search_paths, wtmp_str)
-	
+	//status = PyWideStringList_Append(&config.module_search_paths, wtmp_str)
+	print(try! FileManager.default.contentsOfDirectory(atPath: dynload_path))
 	PyMem_RawFree(wtmp_str)
     
     

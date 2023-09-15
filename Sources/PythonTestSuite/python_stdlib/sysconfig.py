@@ -774,10 +774,16 @@ def get_platform():
         if m:
             release = m.group()
     elif osname[:6] == "darwin":
-        import _osx_support
-        osname, release, machine = _osx_support.get_platform_osx(
-                                            get_config_vars(),
-                                            osname, release, machine)
+        if sys.platform in ("ios", "tvos", "watchos"):
+            import _ios_support
+            _, release, model = _ios_support.get_platform_ios()
+            osname = sys.platform
+            machine = sys.implementation._multiarch
+        else:
+            import _osx_support
+            osname, release, machine = _osx_support.get_platform_osx(
+                                                get_config_vars(),
+                                                osname, release, machine)
 
     return f"{osname}-{release}-{machine}"
 
